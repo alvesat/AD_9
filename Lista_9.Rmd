@@ -1,0 +1,169 @@
+---
+title: "Lista 9 [AD-UFPE-2019]"
+author: "Antonio Fernandes"
+date: "11 de maio de 2019"
+output: pdf_document
+---
+\renewcommand{\contentsname}{Conteúdo}
+  
+\tableofcontents  
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Apresentação
+
+Este documento apresenta as respostas da lista de exercícios 9 da disciplina de Análise de dados.
+
+O link está disponível no GitHub: https://github.com/alvesat/AD_9
+
+
+## Questão 1
+
+### a)
+
+Caso a correlação entre Zi e Xi é igual a 0, não acontece nenhum efeito em $\beta$, mas a conclusão acerca da variável dependente estará distorcida.
+
+### b)
+
+Se Zi e Xi estão correlacionados, então Zi é uma variável omitida (viés de variável omitida) e deve ser incluída no modelo. Dado que a correlação entre Zi e Xi é positiva, significa que ambas as variáveis explicam uma mesma parcela da variação em Y. 
+
+### c)
+
+Do mesmo modo, caso Zi e Xi estejam negativamente correlacionadas, então Zi é uma variável omitida (viés de variável omitida) e deve ser incluída no modelo. Dado que a correlação é negativa, significa que a inclusão de Zi no modelo irá reduzir o efeito de Xi em $\beta$.
+
+## Questão 2
+
+A tabela 9.4 apresenta o resultado de três modelos de regressão de salários de professores nos estados americanos e no distrito de colúmbia.
+
+O modelo *A* contém apenas a variável *porcentagem de residentes no estado que possuem ensino superior*. O efeito dessa variável na VD é de 704.02 (com p-valor < 0.05). O $R^2$ do modelo é de 0.34.
+
+Já o modelo *B* apresenta apenas a variável *Renda per capita*. O efeito dessa variável na VD é de 0.68 (com p-valor < 0.05). O $R^2$ do modelo é de 0.47.
+
+## Questão 3
+
+O modelo *C* da tabela 9.4 contém as duas variáveis independentes (do modelo *A* e do modelo *B*). O efeito da variável *porcentagem de residentes no estado que possuem ensino superior*
+é de 24.56 mas não é significativo (p-valor > 0.05) enquanto que o efeito da variável  *Renda per capita* é de 0.66 e significativo (p-valor > 0.05). Nesse caso, podemos concluir que as VIs estão correlacionadas, ocorrendo o viés de variável omitida tanto no modelo *A* quanto no modelo *B*.
+
+## Questão 4.1
+
+### a)
+
+Modelo com as variáveis do banco *worldrecall.txt*
+
+```{r}
+
+# lendo banco worldrecall
+
+worldrecall <- read.delim("~/Dados/Listas/AD_9/AD_9/worldrecall.txt")
+
+  # modelo linear
+
+Linear <- lm(prop ~ time, data = worldrecall)
+
+  # resumo do modelo
+
+summary(Linear)
+
+```
+
+O resutado do modelo mostra um efeito de -0.00005571 da VI na VD. Entretanto o resultado apenas se mantém significativo com o P-valor < 0.1. O  $R^2$ do modelo é de 0.53.
+
+Entretanto, é necessário verificar se o modelo está devidamente ajustado.
+
+```{r}
+
+  # ajuste do modelo
+
+plot(worldrecall$time, worldrecall$prop)
+abline(lm(prop ~ time, data = worldrecall), col = 'red')
+
+plot(Linear, which=2, col=c("red")) # Residuals vs Fitted Plot
+
+plot(Linear, which=1, col=c("blue")) # Q-Q plot
+
+
+
+```
+
+Com base nos gráficos acima, podemos concluir que a relação entre as variáveis do modelo não é linear. A linha de regressão do gráfico mostra que as observações da variável independente não possuem um comportamento linear, do mesmo modo que o gráfico de residuals vs fitted. 
+
+Por isso, a variável independente do modelo será transformada em log
+
+```{r}
+  # colocando vi em log
+
+worldrecall$timeln <- log(worldrecall$time)
+
+  # modelo linear
+
+Linear_ln <- lm(prop ~ timeln, data = worldrecall)
+
+  # resumo do modelo
+
+summary(Linear_ln)
+
+```
+O modelo Level-log mostra que a variável independente tem um efeito negativo e estatisticamente significativo na VD (P-valor < 0.05). O $R^2$ do modelo é de 0.989, mostrando que a VI explica quase que completamente a variância da VD. Para interpretar o modelo, é necessário efetuar uma transformação:
+
+```{r}
+
+(-0.079227/100)
+
+```
+Isso significa que 1% de variação em Xi implica em -0.00079227 de variação em Yi. Agora vamos verificar o ajuste do modelo
+
+```{r}
+# ajuste do modelo
+
+plot(worldrecall$timeln, worldrecall$prop)
+abline(lm(prop ~ timeln, data = worldrecall))
+
+plot(Linear_ln, which=2, col=c("red")) # Residuals vs Fitted Plot
+
+plot(Linear_ln, which=1, col=c("blue")) # Q-Q plot
+
+```
+Ao observar os gráficos, percebemos que, com a transformação da variável independente em log, o modelo apresenta um ajuste adequado e uma relação linear entre as variáveis.
+
+
+### b)
+
+Modelo com as variáveis do banco *worldrecall.txt*
+
+```{r}
+
+# lendo banco shortleaf
+
+shortleaf <- read.delim("~/Dados/Listas/AD_9/AD_9/shortleaf.txt")
+
+# modelo linear
+
+Linear <- lm(Vol ~ Diam, data = shortleaf)
+
+# resumo do modelo
+
+summary(Linear)
+
+```
+Os resultados mostram que o aumento de 1 unidade na VI leva a um aumento de 6.84 na VD. O resultado é estatisticamente significante (p-valor < 0.05) e o $R^2$ do modelo é de 0.89. 
+
+```{r}
+# ajuste do modelo
+
+plot(shortleaf$Diam, shortleaf$Vol)
+abline(lm(Vol ~ Diam, data = shortleaf), col = 'red')
+
+plot(Linear, which=2, col=c("red")) # Residuals vs Fitted Plot
+
+plot(Linear, which=1, col=c("blue")) # Q-Q plot
+
+```
+Os gráficos para analisar o ajuste do modelo mostram que a relação entre as duas variáveis não é linear. Ou seja, é necessário executar transformações na VD, VI ou em ambas. Para verificar isso, serão analisados o histograma de cada variável.  
+
+```{r}
+hist(shortleaf$Diam)
+hist(shortleaf$Vol)
+```
+Observando os histogramas das duas variáveis, observa-se que ambas não apresentam uma distribuição próxima da normal. Assim, ambas serão transormadas em log.
