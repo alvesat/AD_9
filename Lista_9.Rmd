@@ -166,4 +166,193 @@ Os gráficos para analisar o ajuste do modelo mostram que a relação entre as d
 hist(shortleaf$Diam)
 hist(shortleaf$Vol)
 ```
-Observando os histogramas das duas variáveis, observa-se que ambas não apresentam uma distribuição próxima da normal. Assim, ambas serão transormadas em log.
+Observando os histogramas das duas variáveis, observa-se que ambas não apresentam uma distribuição próxima da normal. Assim, ambas serão transformadas em log.
+
+```{r}
+
+  # logaritmo das duas variáveis
+
+shortleaf$diam_log <- log(shortleaf$Diam)
+shortleaf$Vol_log <- log(shortleaf$Vol)  
+
+```
+Com as variaveis transformas em log, vamos executar outro modelo linear:
+
+```{r}
+
+# modelo linear
+
+Linear <- lm(Vol_log ~ diam_log, data = shortleaf)
+
+# resumo do modelo
+
+summary(Linear)
+
+```
+Os resultados do modelo mostra que 1% de variação na Variável Independente implica em 2,56% de variação na VD. Esse resultado é estatisticamente significativo (p-valor < 0.05) O $R^2$ do modelo é de 0.97. Agora, iremos verificar o ajuste do modelo:
+
+```{r}
+# ajuste do modelo
+
+plot(shortleaf$diam_log, shortleaf$Vol_log)
+abline(lm(Vol_log ~ diam_log, data = shortleaf), col = 'red')
+
+plot(Linear, which=2, col=c("red")) # Residuals vs Fitted Plot
+
+plot(Linear, which=1, col=c("blue")) # Q-Q plot
+
+```
+Como é possível observar, os gráficos mostram que o modelo linear com as variáveis em log apresentam uma relação linear, mostrando que o modelo é adequado.
+
+### c)
+
+Modelo com as variáveis do banco *mammgest*
+
+```{r, results='hide', message=FALSE, warning=FALSE}
+
+library("readxl")
+
+# lendo banco mammgest
+
+mammget <- read_excel("mammget.xlsx", col_types = c("numeric","numeric"))
+```
+
+```{r}
+# modelo linear
+
+Linear <- lm(length ~ birtwgt, data = mammget)
+
+# resumo do modelo
+
+summary(Linear)
+
+```
+Os resultados mostram que o aumento de 1 unidade na VI leva a um aumento de 3.59 na VD. O resultado é estatisticamente significante (p-valor < 0.05) e o $R^2$ do modelo é de 0.82. 
+
+```{r}
+# ajuste do modelo
+
+plot(mammget$birtwgt, mammget$length)
+abline(lm(length ~ birtwgt, data = mammget), col = 'red')
+
+plot(Linear, which=2, col=c("red")) # Residuals vs Fitted Plot
+
+plot(Linear, which=1, col=c("blue")) # Q-Q plot
+
+```
+Os gráficos para analisar o ajuste do modelo mostram que a relação entre as duas variáveis não é linear. Ou seja, é necessário executar uma transformação logaritmica na VI.  
+
+
+```{r}
+
+  # logaritmo da VI
+
+mammget$birtwgt_log <- log(mammget$birtwgt)  
+
+```
+Com as variaveis transformas em log, vamos executar outro modelo linear:
+
+```{r}
+
+# modelo linear
+
+Linear <- lm(length ~ birtwgt_log, data = mammget)
+
+# resumo do modelo
+
+summary(Linear)
+
+```
+Os resultados do modelo mostra que 1% de variação na Variável Independente implica em 0.56 de variação na VD. Esse resultado é estatisticamente significativo (p-valor < 0.10) O $R^2$ do modelo é de 0.54. Agora, iremos verificar o ajuste do modelo:
+
+```{r}
+# ajuste do modelo
+
+plot(mammget$birtwgt_log, mammget$length)
+abline(lm(length ~ birtwgt_log, data = mammget), col = 'red')
+
+plot(Linear, which=2, col=c("red")) # Residuals vs Fitted Plot
+
+plot(Linear, which=1, col=c("blue")) # Q-Q plot
+
+```
+Como é possível observar, os gráficos mostram que o modelo linear com a VI em log apresenta uma relação linear um pouco melhor que o modelo anterior, sendo esse modelo mais adequado para análise.
+
+
+## 4.2
+
+### a)
+
+Os modelos polinomiais apresentam uma distribuição dos dados não linear, que pode apresentar variações de acordo com o grau do modelo (quadrático, cúbico, etc). Desse modo, um modelo quadrático em um grafico de *residuals vs fitted* por exemplo tende a apresentar a distribuição dos dados de uma maneira não linear e não aleatório, mas como uma parábola. Assim, o arcabouço que temos acerca dos modelos lineares não é o apropriado para o desenvolvimento de modelos polinomiais. Os critérios de ajustes de um modelo linear não são os mesmos para um modelo polinomial.
+
+### b)
+
+Modelo com as variáveis do banco *bluegills*
+
+```{r}
+
+# lendo banco bluegills
+
+bluegills <- read.delim("~/Dados/Listas/AD_9/AD_9/bluegills.txt")
+
+# modelo linear
+
+Linear <- lm(length ~ age, data = bluegills)
+
+# resumo do modelo
+
+summary(Linear)
+
+```
+O resultado do modelo linear apresenta um resultado estatisticamente positivo da VI sobre VD (p-valor < 0.05). O aumento de uma unidade na VI representa o aumento de 22.31 unidades na VD. O $R^2$ do modelo é de 0.73. Vamos ver o ajuste do modelo:
+
+```{r}
+# ajuste do modelo
+
+plot(bluegills$age, bluegills$length)
+abline(lm(length ~ age, data = bluegills), col = 'red')
+
+plot(Linear, which=2, col=c("red")) # Residuals vs Fitted Plot
+
+plot(Linear, which=1, col=c("blue")) # Q-Q plot
+
+
+```
+Os resultados do ajuste do modelo mostram claramente que as relações entre as duas variáveis não seguem uma relação linear. Desse modo, é necessário executarmos um modelo quadrático.
+
+```{r}
+
+# elevando a VI ao quadrado
+
+bluegills$age_sq <- bluegills$age^2
+
+# rodando o modelo com a vi ao quadrado
+
+Linear <- lm(length ~ age + age_sq, data = bluegills)
+
+# modelo
+
+summary(Linear)
+
+```
+
+O sumário do modelo mostra que a capacidade explicativa do modelo é de 0.79 ($R^2$) em detrimento de 0.73 do modelo anterior. 
+
+
+```{r}
+
+# ajuste do modelo
+
+hist(Linear$residuals)
+
+```
+Como podemos observar com o histrograma, os residuos do modelo se aproximam bastante de uma distribuição normal, mostrando uma maior adequação do modelo. Para verificar o efeito da VI na VD, não podemos interpretar como um modelo linear, mas é necessário levar em conta as duas VIs de mandeira simultanea. Para isso, vamos utilizar o comando abaixo que sumariza estes resultados:
+
+```{r}
+
+Linear$fitted.values
+
+```
+
+Nesse caso, os resultados mostram que o aumento de uma unidade na VI não é o mesmo para todo aumento. Ou seja, o aumento de 0 para 1 unidade da VI resulta em um efeito na VD diferente do aumento da unidade 37 para a 38 da VI. Isso se dá devido a curva do modelo não ser linear, apresentado valores diferentes de acordo com o valor observado. 
+
