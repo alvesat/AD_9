@@ -218,6 +218,7 @@ mammget <- read_excel("mammget.xlsx", col_types = c("numeric","numeric"))
 ```
 
 ```{r}
+
 # modelo linear
 
 Linear <- lm(length ~ birtwgt, data = mammget)
@@ -283,7 +284,7 @@ Como é possível observar, os gráficos mostram que o modelo linear com a VI em
 
 ### a)
 
-Os modelos polinomiais apresentam uma distribuição dos dados não linear, que pode apresentar variações de acordo com o grau do modelo (quadrático, cúbico, etc). Desse modo, um modelo quadrático em um grafico de *residuals vs fitted* por exemplo tende a apresentar a distribuição dos dados de uma maneira não linear e não aleatório, mas como uma parábola. Assim, o arcabouço que temos acerca dos modelos lineares não é o apropriado para o desenvolvimento de modelos polinomiais. Os critérios de ajustes de um modelo linear não são os mesmos para um modelo polinomial.
+Os modelos polinomiais apresentam uma distribuição dos dados não linear, que pode apresentar variações de acordo com o grau do modelo (quadrático, cúbico, etc). Desse modo, um modelo quadrático em um grafico de *residuals vs fitted* por exemplo tende a apresentar a distribuição dos dados de uma maneira não linear e não aleatório, mas como uma parábola. Assim, o arcabouço que temos acerca dos modelos lineares não é o apropriado para o desenvolvimento de modelos polinomiais. Os critérios de ajustes de um modelo linear não são os mesmos para um modelo polinomial. 
 
 ### b)
 

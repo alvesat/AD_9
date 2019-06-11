@@ -3,6 +3,13 @@
 
 ###### EXERCICIO 4.1 ######################################################################
 
+library(tidyverse)
+library(GGally)
+library(foreign)
+library(texreg)
+library(olsrr)
+
+
 options(scipen=999)
 
 ###### 4.1 a) ######################################################################
@@ -18,6 +25,7 @@ Linear <- lm(prop ~ time, data = worldrecall)
   # resumo do modelo
 
 summary(Linear)
+
 
   # ajuste do modelo
 
@@ -42,6 +50,8 @@ Linear_ln <- lm(prop ~ timeln, data = worldrecall)
   # resumo do modelo
 
 summary(Linear_ln)
+
+ggplot(worldrecall, aes(timeln, prop))+geom_point()
 
   # ajuste do modelo
 
